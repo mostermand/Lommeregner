@@ -77,7 +77,7 @@ enum class Token {
             break;
         }
     }
-    std::cout<<"Brug <num1>[+-*/]<num2>";
+    std::cout<<"Brug <num1>[+-*/]<num2>\n";
     return -1;
  }
 
