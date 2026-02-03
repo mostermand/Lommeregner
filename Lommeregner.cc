@@ -2,70 +2,20 @@
 #include <vector>
 #include <string>
 
-enum class Token {
-    Plus,
-    Minus,
-    Prod,
-    Div,
-    Num,
-    OpenParen,
-    CloseParen
-};
-
- void lexString(std::string rawText, std::vector<std::pair<Token,std::string> >& tokenOut) {
-    for(size_t i = 0; i < rawText.size(); i++) {
-        switch(rawText[i])
-        {
-        case '+':
-            tokenOut.push_back(std::make_pair(Token::Plus,std::string("+")));
-            break;
-        case '-':
-            tokenOut.push_back(std::make_pair(Token::Minus,std::string("-")));
-            break;
-        case '*':
-            tokenOut.push_back(std::make_pair(Token::Prod,std::string("*")));
-            break;
-        case '/':
-            tokenOut.push_back(std::make_pair(Token::Div,std::string("/")));
-            break;
-        case '(':
-            tokenOut.push_back(std::make_pair(Token::OpenParen,std::string("(")));
-            break;
-        case ')':
-            tokenOut.push_back(std::make_pair(Token::CloseParen,std::string(")")));
-            break;
-        case ' ':
-            //ignore spaces
-            break;
-        default:
-            if('0' <= rawText[i] && rawText[i] <= '9') {
-                size_t j = 0;
-                //Empty loop body, j is length of num; Shortcircuit means we never access the right side of && if it would overflow
-                for(; i+j < rawText.size() && ('0' <= rawText[i+j] && rawText[i+j] <= '9'); j++) {}
-                tokenOut.push_back(std::make_pair(Token::Num,rawText.substr(i,j)));
-                //after parsing number increase i to index of last digit of number
-                i = i+j - 1;
-            } else {
-                //does not recognize the symbol.
-            }
-            break;
-        }
-    }
- }
-
+#include "Lexing.h"
  
- int eval(std::vector<std::pair<Token, std::string> > tokenList) {
+ int eval(TokenVector tokenList) {
     int result = 0;
     if(tokenList.size() == 3) {
         switch(tokenList[1].first)
         {
-        case Token::Plus:
+        case TokenId::Plus:
             return std::stoi(tokenList[0].second) + std::stoi(tokenList[2].second);
-        case Token::Minus:
+        case TokenId::Minus:
             return std::stoi(tokenList[0].second) - std::stoi(tokenList[2].second);
-        case Token::Prod:
+        case TokenId::Prod:
             return std::stoi(tokenList[0].second) * std::stoi(tokenList[2].second);
-        case Token::Div:
+        case TokenId::Div:
             if(std::stoi(tokenList[2].second) == 0) {
                 std::cout<<"Division med 0\n";
             } else {
@@ -83,7 +33,7 @@ enum class Token {
 
 int main(int argc, char* argv[]) {
     std::string input = "";
-    std::vector<std::pair<Token, std::string> > tokens{};
+    TokenVector tokens{};
 
     std::cout<<"Lommeregner:\n"<<"Skriv et udtryk der bruger +,-,*,/\n";
     while(1) {
