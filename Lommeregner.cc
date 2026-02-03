@@ -43,7 +43,6 @@ enum class Token {
                 //Empty loop body, j is length of num; Shortcircuit means we never access the right side of && if it would overflow
                 for(; i+j < rawText.size() && ('0' <= rawText[i+j] && rawText[i+j] <= '9'); j++) {}
                 tokenOut.push_back(std::make_pair(Token::Num,rawText.substr(i,j)));
-                //after parsing number increase i
                 i = i+j;
             } else {
                 //does not recognize the symbol.
