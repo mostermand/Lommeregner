@@ -152,6 +152,22 @@ void ParseTree::parse(TokenVector toks) {
     */
 }
 
-bool ParseTree::isLeaf() {
+bool ParseTree::isLeaf() const {
     return this->leaf;
+}
+
+TokenId ParseTree::getLabel() const {
+    return this->label;
+}
+
+ParseTree& ParseTree::getLeft() const {
+    return *this->left;
+}
+
+ParseTree& ParseTree::getRight() const {
+    return *this->right;
+}
+
+int ParseTree::getNum() const {
+    return this->num;
 }
