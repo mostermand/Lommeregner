@@ -1,3 +1,6 @@
+#ifndef PARSETREE_H
+#define PARSETREE_H
+
 #include <memory>
 #include "Lexing.h"
 
@@ -20,3 +23,5 @@ private:
     //Numerical value if leaf is true
     int num;
 };
+
+#endif

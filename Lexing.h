@@ -1,3 +1,6 @@
+#ifndef LEXING_H
+#define LEXING_H
+
 #include <utility>
 #include <string>
 #include <vector>
@@ -17,3 +20,4 @@ typedef std::vector<Token> TokenVector;
 
 void lexString(std::string rawText, TokenVector& tokenOut);
 
+#endif
