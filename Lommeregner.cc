@@ -3,8 +3,9 @@
 #include <string>
 
 #include "Lexing.h"
+#include "ParseTree.h"
 
-int eval(TokenVector tokenList) {
+int evalTokenList(TokenVector tokenList) {
    int result = 0;
    if(tokenList.size() == 3) {
        switch(tokenList[1].first)
@@ -31,16 +32,42 @@ int eval(TokenVector tokenList) {
    return -1;
 }
 
+int eval(const ParseTree& tree) {
+    switch(tree.getLabel())
+    {
+    case TokenId::Plus:
+        return eval(tree.getLeft()) + eval(tree.getRight());
+        break;
+    case TokenId::Minus:
+        return eval(tree.getLeft()) - eval(tree.getRight());
+        break;
+    case TokenId::Prod:
+        return eval(tree.getLeft()) * eval(tree.getRight());
+        break;
+    case TokenId::Div:
+        return eval(tree.getLeft()) / eval(tree.getRight());
+        break;
+    case TokenId::Num:
+        return eval(tree.getNum());
+        break;
+    default:
+        std::cout<<"Error: invalid TokenId of ParseTree";
+        return -1;
+    }
+}
+
 int main(int argc, char* argv[]) {
     std::string input = "";
     TokenVector tokens{};
+    ParseTree tree;
 
     std::cout<<"Lommeregner:\n"<<"Skriv et udtryk der bruger +,-,*,/\n";
     while(1) {
         std::cout<<">";
         std::getline(std::cin, input);
         lexString(input, tokens);
-        std::cout<<eval(tokens)<<std::endl;
+        tree.parse(tokens);
+        std::cout<<eval(tree)<<std::endl;
 
         tokens.clear();
     }
