@@ -106,9 +106,9 @@ void ParseTree::parse(const TokenVector& toks) {
             break;
         }
         ++stage;
-        if(stage >= 3) {
-            //error more than 3 (2 args, 1 operator) stages
-        }
+    }
+    if(stage != 0) {
+        this->label = TokenId::InvalidId;
     }
 }
 
