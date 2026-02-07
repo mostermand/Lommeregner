@@ -54,7 +54,7 @@ void ParseTree::parse(const TokenVector& toks) {
             if(stage == 0) {
                 this->label = TokenId::Num;
                 this->num = std::stoi(tokenIterator->second);
-            } else if (stage == 2) {
+            } else if(stage == 2) {
                 this->right.reset(new ParseTree(this->num));
                 stage = 0;
             } else {
