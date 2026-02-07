@@ -107,6 +107,13 @@ void ParseTree::parse(const TokenVector& toks) {
     }
 }
 
+void ParseTree::clear() {
+    this->label = TokenId::InvalidId;
+    this->left.reset(nullptr);
+    this->right.reset(nullptr);
+    this->num = 0;
+}
+
 TokenId ParseTree::getLabel() const {
     return this->label;
 }

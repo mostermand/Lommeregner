@@ -11,6 +11,7 @@ public:
     ParseTree(int num); //Initializes to leaf node with value num
     ParseTree(TokenId label, std::unique_ptr<ParseTree> left, std::unique_ptr<ParseTree> right);
     void parse(const TokenVector& toks);
+    void clear();
     TokenId getLabel() const;
     ParseTree& getLeft() const;
     ParseTree& getRight() const;
