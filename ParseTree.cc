@@ -56,6 +56,7 @@ void ParseTree::parse(const TokenVector& toks) {
                 this->num = std::stoi(tokenIterator->second);
             } else if (stage == 2) {
                 this->right.reset(new ParseTree(this->num));
+                stage = 0;
             } else {
                 //error too many arguments
             }
