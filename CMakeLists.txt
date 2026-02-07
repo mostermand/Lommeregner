@@ -1,4 +1,5 @@
-cmake_minimum_required(VERSION 4.0)
-project(Lommeregner)
+cmake_minimum_required(VERSION 3.10.0)
+project(Lommeregner VERSION 0.1.0 LANGUAGES C CXX)
 
-add_executable(Lommeregner Lommeregner.cc Lexing.cc ParseTree.cc)
+add_executable(Lommeregner Lommeregner.cc Lexing.cc ParseTree.cc )
+
