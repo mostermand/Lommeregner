@@ -1,13 +1,13 @@
 #include "ParseTree.h"
 
-ParseTree::ParseTree() {}
-ParseTree::ParseTree(const TokenVector& toks){
+ParseTree::ParseTree() : label(TokenId::InvalidId) {}
+
+ParseTree::ParseTree(const TokenVector& toks) : label(TokenId::InvalidId) {
     this->parse(toks);
 }
 
-ParseTree::ParseTree(int num) {
+ParseTree::ParseTree(int num) : label(TokenId::Num) {
     this->num = num;
-    this->label = TokenId::Num;
 }
 
 ParseTree::ParseTree(TokenId label, std::unique_ptr<ParseTree> left, std::unique_ptr<ParseTree> right) : label(label), left(std::move(left)), right(std::move(right)) {}
@@ -41,6 +41,7 @@ void ParseTree::parse(const TokenVector& toks) {
                     this->left.reset(new ParseTree(this->num));
                     this->label = tokenIterator->first;
                     break;
+                case TokenId::InvalidId:
                 default:
                     break;
                 }
@@ -98,6 +99,9 @@ void ParseTree::parse(const TokenVector& toks) {
             } else {
                 //error closed paren without matching open paren
             }
+            break;
+        case TokenId::InvalidId:
+        default:
             break;
         }
         ++stage;
