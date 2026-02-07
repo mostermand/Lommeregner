@@ -70,6 +70,7 @@ int main(int argc, char* argv[]) {
         std::cout<<eval(tree)<<std::endl;
 
         tokens.clear();
+        tree.clear();
     }
     
 }
