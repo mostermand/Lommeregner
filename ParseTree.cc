@@ -75,26 +75,7 @@ void ParseTree::parse(const TokenVector& toks) {
                 --parenDepth;
                 stage = stageStack.back();
                 stageStack.pop_back();
-                switch(stage)
-                {
-                case 0:
-                    if(!this->left) {
-                        this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
-                    } else {
-                        //left is not empty, perhaps error
-                    }
-                    break;
-                case 1:
-                    //error expression used as operator
-                    break;
-                case 2:
-                    if(!this->right) {
-                        this->right.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
-                    } else {
-                        //right is not empty, perhaps error
-                    }
-                    break;
-                }
+                this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
                 this->label = labelStack.back();
                 labelStack.pop_back();
             } else {
