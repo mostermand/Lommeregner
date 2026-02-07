@@ -12,7 +12,8 @@ enum class TokenId {
     Div,
     Num,
     OpenParen,
-    CloseParen
+    CloseParen,
+    InvalidId
 };
 
 typedef std::pair<TokenId,std::string> Token;
