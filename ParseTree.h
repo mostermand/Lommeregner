@@ -21,7 +21,7 @@ private:
     //The left and right ...
     std::unique_ptr<ParseTree> left;
     std::unique_ptr<ParseTree> right;
-    //Numerical value if leaf is true
+    //Numerical value if label == TokenID::Num
     int num;
 };
 
