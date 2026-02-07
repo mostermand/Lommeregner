@@ -1,25 +1,26 @@
 #include "ParseTree.h"
 
-ParseTree::ParseTree() : leaf(false) {}
-ParseTree::ParseTree(TokenVector toks) : leaf(false) {
+ParseTree::ParseTree() {}
+ParseTree::ParseTree(const TokenVector& toks){
     this->parse(toks);
 }
 
-ParseTree::ParseTree(int num) : leaf(true) {
+ParseTree::ParseTree(int num) {
     this->num = num;
+    this->label = TokenId::Num;
 }
 
-ParseTree::ParseTree(TokenId label, std::unique_ptr<ParseTree> left, std::unique_ptr<ParseTree> right) : label(label), left(std::move(left)), right(std::move(right)), leaf(false) {}
+ParseTree::ParseTree(TokenId label, std::unique_ptr<ParseTree> left, std::unique_ptr<ParseTree> right) : label(label), left(std::move(left)), right(std::move(right)) {}
 
-void ParseTree::parse(TokenVector toks) {
+void ParseTree::parse(const TokenVector& toks) {
     int stage = 0; //which 
     int parenDepth = 0;
     std::vector<int> stageStack;
     std::vector<TokenId> labelStack;
     std::vector<std::unique_ptr<ParseTree> > leftStack, rightStack;
 
-    for(auto it = toks.begin(); it != toks.end(); ++it) {
-        switch(it->first)
+    for(auto tokenIterator = toks.begin(); tokenIterator != toks.end(); ++tokenIterator) {
+        switch(tokenIterator->first)
         {
             //Fallthrough
         case TokenId::Plus:
@@ -27,35 +28,37 @@ void ParseTree::parse(TokenVector toks) {
         case TokenId::Prod:
         case TokenId::Div:
             if(stage == 1) {
-                this->label = it->first;
+                switch(this->label)
+                {
+                case TokenId::Plus:
+                case TokenId::Minus:
+                case TokenId::Prod:
+                case TokenId::Div:
+                    this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
+                    this->label = tokenIterator->first;
+                    break;
+                case TokenId::Num:
+                    this->left.reset(new ParseTree(this->num));
+                    this->label = tokenIterator->first;
+                    break;
+                default:
+                    break;
+                }
+                this->label = tokenIterator->first;
             } else {
                 //error
             }
             break;
         case TokenId::Num:
-            switch(stage)
-            {
-            case 0:
-                if(!this->left) {
-                    this->left.reset(new ParseTree(std::stoi(it->second)));
-                } else {
-                    //left is not empty, perhaps error
-                }
-                break;
-            case 1:
-                //invalid use of number as operator
-                break;
-            case 2:
-                if(!this->right) {
-                    this->right.reset(new ParseTree(std::stoi(it->second)));
-                } else {
-                    //right is not empty perhaps error
-                }
-                break;
-            default:
-                //error
-                break;
-        }
+            if(stage == 0) {
+                this->label = TokenId::Num;
+                this->num = std::stoi(tokenIterator->second);
+            } else if (stage == 2) {
+                this->right.reset(new ParseTree(this->num));
+            } else {
+                //error too many arguments
+            }
+            
             break;
         case TokenId::OpenParen:
             ++parenDepth;
@@ -102,58 +105,6 @@ void ParseTree::parse(TokenVector toks) {
             //error more than 3 (2 args, 1 operator) stages
         }
     }
-    /*
-    std::vector<int> stageStack;
-    // -1: when parsing larg, 0: when parsing operator, 1: when parsing rarg
-    int stage = -1;
-    int parenDepth = 0;
-    for(auto it = toks.begin(); it != toks.end(); ++it) {
-        switch(it->first)
-        {
-        case TokenId::Num:
-            switch(stage)
-            {
-            case -1:
-                this->left = new ParseTree(std::stoi(it->second));
-                ++stage;
-                break;
-            case 1:
-                this->right = new ParseTree(std::stoi(it->second));
-                break;
-            default:
-                //error, probably a number used as operator
-            }
-            break;
-        case TokenId::OpenParen:
-            ++parenDepth;
-            stageStack.push_back(stage);
-            stage = -1;
-            break;
-        case TokenId::CloseParen:
-            if(parenDepth != 0 && stage == 1) {
-                --parenDepth;
-                stage = stageStack.back();
-                stageStack.pop_back();
-            } else {
-                //error closed parenthesis without matching opening or body of paren pair is not a full expression
-            }
-            break;
-        //fallthrough
-        case TokenId::Plus:
-        case TokenId::Minus:
-        case TokenId::Prod:
-        case TokenId::Div:
-            this->label = it->first;
-            break;
-        default:
-            //error should never happen
-        }
-    }
-    */
-}
-
-bool ParseTree::isLeaf() const {
-    return this->leaf;
 }
 
 TokenId ParseTree::getLabel() const {
