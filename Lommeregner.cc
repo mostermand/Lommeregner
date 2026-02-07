@@ -48,10 +48,10 @@ int eval(const ParseTree& tree) {
         return eval(tree.getLeft()) / eval(tree.getRight());
         break;
     case TokenId::Num:
-        return eval(tree.getNum());
+        return tree.getNum();
         break;
     default:
-        std::cout<<"Error: invalid TokenId of ParseTree";
+        std::cout<<"Error: invalid TokenId of ParseTree\n";
         return -1;
     }
 }
