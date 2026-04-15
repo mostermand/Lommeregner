@@ -22,45 +22,55 @@ void ParseTree::parse(const TokenVector& toks) {
     for(auto tokenIterator = toks.begin(); tokenIterator != toks.end(); ++tokenIterator) {
         switch(tokenIterator->first)
         {
-            //Fallthrough
+        //Fallthrough
         case TokenId::Plus:
         case TokenId::Minus:
         case TokenId::Prod:
         case TokenId::Div:
-            if(stage == 1) {
-                switch(this->label)
-                {
-                case TokenId::Plus:
-                case TokenId::Minus:
-                case TokenId::Prod:
-                case TokenId::Div:
+            switch(this->label)
+            {
+            case TokenId::Plus:
+            case TokenId::Minus:
+            case TokenId::Prod:
+            case TokenId::Div:
+                if(this->right) {
                     this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
-                    this->label = tokenIterator->first;
-                    break;
-                case TokenId::Num:
-                    this->left.reset(new ParseTree(this->num));
-                    this->label = tokenIterator->first;
-                    break;
-                case TokenId::InvalidId:
-                default:
-                    break;
+                } else {
+                    //error: left argument is partially applied
                 }
-                this->label = tokenIterator->first;
-            } else {
-                //error
+                break;
+            case TokenId::Num:
+                this->left.reset(new ParseTree(this->num));
+                break;
+            case TokenId::InvalidId:
+            default:
+                break;
             }
+            this->label = tokenIterator->first;
             break;
         case TokenId::Num:
-            if(stage == 0) {
+            switch(this->label)
+            {
+            case TokenId::Plus:
+            case TokenId::Minus:
+            case TokenId::Prod:
+            case TokenId::Div:
+                if(!this->right) {
+                    this->right.reset(new ParseTree(std::stoi(tokenIterator->second)));
+                } else {
+                    //aplying full expression to num
+                }
+                break;
+            case TokenId::Num:
+                //error applying num to num
+                break;
+            case TokenId::InvalidId:
                 this->label = TokenId::Num;
                 this->num = std::stoi(tokenIterator->second);
-            } else if(stage == 2) {
-                this->right.reset(new ParseTree(this->num));
-                stage = 0;
-            } else {
-                //error too many arguments
+                break;
+            default:
+                break;
             }
-            
             break;
         case TokenId::OpenParen:
             ++parenDepth;
@@ -73,9 +83,11 @@ void ParseTree::parse(const TokenVector& toks) {
         case TokenId::CloseParen:
             if(parenDepth != 0) {
                 --parenDepth;
+                this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
+
                 stage = stageStack.back();
                 stageStack.pop_back();
-                this->left.reset(new ParseTree(this->label, std::move(this->left), std::move(this->right)));
+
                 this->label = labelStack.back();
                 labelStack.pop_back();
             } else {
@@ -87,9 +99,6 @@ void ParseTree::parse(const TokenVector& toks) {
             break;
         }
         ++stage;
-    }
-    if(stage != 0) {
-        this->label = TokenId::InvalidId;
     }
 }
 
